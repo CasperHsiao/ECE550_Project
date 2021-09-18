@@ -1,0 +1,3 @@
+module wallace_tree_multiplier(A, B, prod);
+
+endmodule
