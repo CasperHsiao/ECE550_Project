@@ -1,6 +1,7 @@
-#db/** 
-#incremental_db/** 
-#output_files/** 
-#simulation/**
-*/**
-Waveform.vwf
+**/db/
+**/incremental_db/
+**/output_files/
+**/simulation/
+**/Waveform.vwf
+**/*.bak
+**/*.rpt
