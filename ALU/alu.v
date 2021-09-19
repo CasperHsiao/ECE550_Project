@@ -31,4 +31,20 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	four_byte_CSA csaSUB(data_operandA, result_B, ctrl_ALUopcode[0], data_result, co, overflow);
 	// End of Checkpoint1
 	
+	
+	
+	//Start of Checkpoint2
+	
+	
+	
+	
+	//bitwise_OR implementation
+	
+	bitwise_or bitwise_Or(a,b,aorb);
+
+	//bitwise_AND implementation
+	
+	bitwise_and bitwsie_And(a,b,aandb);
+	
+	
 endmodule
