@@ -6,7 +6,7 @@ output[31:0] aAndb;
 	generate
 		for (i = 0; i < 32; i = i+1)
 		begin : and_loop
-			or bitwise_and(a[i], b[i], aAndb[i]);
+			and bitwise_and(a[i], b[i], aAndb[i]);
 		end
 	endgenerate
 
