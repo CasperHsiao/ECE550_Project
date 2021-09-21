@@ -13,6 +13,7 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	
 	wire [31:0] arith_logic_result;
 	
+	wire [31:0] shiftL1; 
 	
 	// Checkpoint 1:
 	// ADD, SUBTRACT
@@ -47,6 +48,17 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	mux_2_1 choose_OP(arith_result, logic_result, ctrl_ALUopcode[1], arith_logic_result);
 	
 	assign data_result = arith_logic_result;
+	
+	// shift left 1 bit
+	genvar j;
+	generate
+		for (j = 0; j < 31; j = j+1)
+		begin : muxesLayer1
+			mux_2_1 muxesLayer(data_operandA[j+1], data_operandA[j], ctrl_shiftamt[0], shiftL1[j+1]);
+		end
+	endgenerate
+	
+	mux_2_1 shiftL0(data_operandA[0], 1'b0, ctrl_shiftamt[0], shiftL1[0]);
 	
 	
 	
