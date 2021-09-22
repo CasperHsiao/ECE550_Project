@@ -13,7 +13,9 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	
 	wire [31:0] arith_logic_result;
 	
-	wire [31:0] shiftL1; 
+	wire [31:0] shiftL1,shiftL2,shiftL3,shiftL4,shiftL5; 
+	
+	wire[31:0] shiftLL_result,shiftAR_result,shift_result;
 	
 	// Checkpoint 1:
 	// ADD, SUBTRACT
@@ -49,7 +51,12 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	
 	assign data_result = arith_logic_result;
 	
+	mux_2_1 choose_shift(shiftLL_result, shiftAR_result, ctrl_ALUopcode[2], shift_result);
+	assign data_result = shift_result;
+	
 	// shift left 1 bit
+		
+	mux_2_1 shiftL0(data_operandA[0], 1'b0, ctrl_shiftamt[0], shiftL1[0]);
 	genvar j;
 	generate
 		for (j = 0; j < 31; j = j+1)
@@ -57,15 +64,44 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 			mux_2_1 muxesLayer(data_operandA[j+1], data_operandA[j], ctrl_shiftamt[0], shiftL1[j+1]);
 		end
 	endgenerate
+
 	
-	mux_2_1 shiftL0(data_operandA[0], 1'b0, ctrl_shiftamt[0], shiftL1[0]);
+	mux_2_1 shiftL2_0(shiftL1[0], 1'b0, ctrl_shiftamt[0], shiftL2[0]);
+	generate
+		for (j = 0; j < 31; j = j+1)
+		begin : muxesLayer2
+			mux_2_1 muxesLayer(shiftL1[j+1], shiftL1[j], ctrl_shiftamt[0], shiftL2[j+1]);
+		end
+	endgenerate
 	
 	
+		mux_2_1 shiftL3_0(shiftL2[0], 1'b0, ctrl_shiftamt[0], shiftL3[0]);
+	generate
+		for (j = 0; j < 31; j = j+1)
+		begin : muxesLayer3
+			mux_2_1 muxesLayer(shiftL2[j+1], shiftL2[j], ctrl_shiftamt[0], shiftL3[j+1]);
+		end
+	endgenerate
 	
 	
-	
+		mux_2_1 shiftL4_0(shiftL3[0], 1'b0, ctrl_shiftamt[0], shiftL4[0]);
+	generate
+		for (j = 0; j < 31; j = j+1)
+		begin : muxesLayer4
+			mux_2_1 muxesLayer(shiftL3[j+1], shiftL3[j], ctrl_shiftamt[0], shiftL4[j+1]);
+		end
+	endgenerate
 	
 	
 
+		mux_2_1 shiftL5_0(shiftL2[0], 1'b0, ctrl_shiftamt[0], shiftL5[0]);
+	generate
+		for (j = 0; j < 31; j = j+1)
+		begin : muxesLayer5
+			mux_2_1 muxesLayer(shiftL4[j+1], shiftL4[j], ctrl_shiftamt[0], shiftL5[j]);
+		end
+	endgenerate
+	
+	
 	
 endmodule
