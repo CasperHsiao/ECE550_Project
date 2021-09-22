@@ -6,17 +6,16 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
    output [31:0] data_result;
    output isNotEqual, isLessThan, overflow;
 
-	wire co;
+	wire co, not_arith_result;
 	wire [31:0] negateB, selected_B, arith_result;
 	
 	wire [31:0] aORb, aANDb, logic_result;
 	
-	wire [31:0] arith_logic_result;
-	
-
-	wire [31:0] shiftR0, shiftR1,shiftR2,shiftR3,shiftR4; 	
+	wire [31:0] arith_logic_result;		
 	
 	wire[31:0] shiftLL_result, shiftRA_result, shift_result;
+	
+	wire [30:0] notEqual;
 	
 	// Checkpoint 1:
 	// ADD, SUBTRACT
@@ -65,10 +64,18 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	mux_2_1 select_s2(arith_logic_result, shift_result, ctrl_ALUopcode[2], data_result);
 	
 	// A less than B
-	xor lessthan(isLessThan, arith_result[31], overflow);
+	not not31(not_arith_result, arith_result[31]);
+	assign isLessThan = overflow ? not_arith_result : arith_result[31];
 	
 	// A not equal to B
-	mux_2_1 isnotequal(arith_result,1'b0,1'b0,isNotEqual);
+	or or0(notEqual[0], arith_result[0], arith_result[1]);
+	generate
+		for (i = 1; i < 31; i = i+1)
+		begin : notEqual_loop
+			or or1(notEqual[i], notEqual[i-1], arith_result[i+1]);
+		end
+	endgenerate
+	assign isNotEqual = notEqual[30];
 	
 	
 endmodule
