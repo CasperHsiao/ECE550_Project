@@ -64,8 +64,11 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	// Select shift or arith_logic output. 
 	mux_2_1 select_s2(arith_logic_result, shift_result, ctrl_ALUopcode[2], data_result);
 	
+	// A less than B
+	xor lessthan(isLessThan, arith_result[31], overflow);
 	
-	
+	// A not equal to B
+	mux_2_1 isnotequal(arith_result,1'b0,1'b0,isNotEqual);
 	
 	
 endmodule
