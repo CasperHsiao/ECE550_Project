@@ -13,9 +13,10 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	
 	wire [31:0] arith_logic_result;
 	
-	wire [31:0] shiftL1,shiftL2,shiftL3,shiftL4,shiftL5; 
+
+	wire [31:0] shiftR0, shiftR1,shiftR2,shiftR3,shiftR4; 	
 	
-	wire[31:0] shiftLL_result,shiftAR_result,shift_result;
+	wire[31:0] shiftLL_result, shiftAR_result, shift_result;
 	
 	// Checkpoint 1:
 	// ADD, SUBTRACT
@@ -33,74 +34,37 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 		end
 	endgenerate
 	
-	// Choose the right operand for B (positive B or negative B) according to the ALUopcode
-	mux_2_1 choose_arith(data_operandB, negateB, ctrl_ALUopcode[0], selected_B);
+	// Select the right operand for B (positive B or negative B) according to the ALUopcode.
+	mux_2_1 select_arith(data_operandB, negateB, ctrl_ALUopcode[0], selected_B);
 	
-	// Do the addition of operand A and operand B
+	// Compute arithmetic output.
 	four_byte_CSA arith(data_operandA, selected_B, ctrl_ALUopcode[0], arith_result, co, overflow);
 	// End of Checkpoint1
 	
 	
 	
 	// Start of Checkpoint2
-	// Select logical unit output
-	mux_2_1 choose_logic(aANDb, aORb, ctrl_ALUopcode[0], logic_result);
 	
-	// Select logical OP or arithmetic OP
-	mux_2_1 choose_OP(arith_result, logic_result, ctrl_ALUopcode[1], arith_logic_result);
+	// Select logical unit output.
+	mux_2_1 select_logic(aANDb, aORb, ctrl_ALUopcode[0], logic_result);
 	
-	assign data_result = arith_logic_result;
+	// Select logical or arithmetic output.
+	mux_2_1 select_s1(arith_result, logic_result, ctrl_ALUopcode[1], arith_logic_result);
 	
-	mux_2_1 choose_shift(shiftLL_result, shiftAR_result, ctrl_ALUopcode[2], shift_result);
-	assign data_result = shift_result;
+	// Compute shift left.
+	shiftLL_by_5bit shiftLL(data_operandA, ctrl_shiftamt, shiftLL_result);
 	
-	// shift left 1 bit
-		
-	mux_2_1 shiftL0(data_operandA[0], 1'b0, ctrl_shiftamt[0], shiftL1[0]);
-	genvar j;
-	generate
-		for (j = 0; j < 31; j = j+1)
-		begin : muxesLayer1
-			mux_2_1 muxesLayer(data_operandA[j+1], data_operandA[j], ctrl_shiftamt[0], shiftL1[j+1]);
-		end
-	endgenerate
-
+	// Compute shift right.
+//	shiftAR_by_5bit shiftAR(data_operandA, ctrl_shiftamt, shiftAR_result);
 	
-	mux_2_1 shiftL2_0(shiftL1[0], 1'b0, ctrl_shiftamt[0], shiftL2[0]);
-	generate
-		for (j = 0; j < 31; j = j+1)
-		begin : muxesLayer2
-			mux_2_1 muxesLayer(shiftL1[j+1], shiftL1[j], ctrl_shiftamt[0], shiftL2[j+1]);
-		end
-	endgenerate
+	// Select shift left or right output.
+	mux_2_1 select_shift(shiftLL_result, shiftAR_result, ctrl_ALUopcode[0], shift_result);
 	
 	
-		mux_2_1 shiftL3_0(shiftL2[0], 1'b0, ctrl_shiftamt[0], shiftL3[0]);
-	generate
-		for (j = 0; j < 31; j = j+1)
-		begin : muxesLayer3
-			mux_2_1 muxesLayer(shiftL2[j+1], shiftL2[j], ctrl_shiftamt[0], shiftL3[j+1]);
-		end
-	endgenerate
+	// Select shift or arith_logic output. 
+	mux_2_1 select_s2(arith_logic_result, shift_result, ctrl_ALUopcode[2], data_result);
 	
 	
-		mux_2_1 shiftL4_0(shiftL3[0], 1'b0, ctrl_shiftamt[0], shiftL4[0]);
-	generate
-		for (j = 0; j < 31; j = j+1)
-		begin : muxesLayer4
-			mux_2_1 muxesLayer(shiftL3[j+1], shiftL3[j], ctrl_shiftamt[0], shiftL4[j+1]);
-		end
-	endgenerate
-	
-	
-
-		mux_2_1 shiftL5_0(shiftL2[0], 1'b0, ctrl_shiftamt[0], shiftL5[0]);
-	generate
-		for (j = 0; j < 31; j = j+1)
-		begin : muxesLayer5
-			mux_2_1 muxesLayer(shiftL4[j+1], shiftL4[j], ctrl_shiftamt[0], shiftL5[j]);
-		end
-	endgenerate
 	
 	
 	
