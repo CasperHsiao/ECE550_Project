@@ -62,6 +62,7 @@ set_global_assignment -name EDA_TEST_BENCH_NAME alu_tb -section_id eda_simulatio
 set_global_assignment -name EDA_DESIGN_INSTANCE_NAME NA -section_id alu_tb
 set_global_assignment -name EDA_TEST_BENCH_MODULE_NAME alu_tb -section_id alu_tb
 set_global_assignment -name EDA_TEST_BENCH_FILE alu_tb.v -section_id alu_tb
+set_global_assignment -name VERILOG_FILE shiftRA_by_5bit.v
 set_global_assignment -name VERILOG_FILE shiftLL_by_5bit.v
 set_global_assignment -name VERILOG_FILE alu.v
 set_global_assignment -name VERILOG_FILE four_byte_CSA.v

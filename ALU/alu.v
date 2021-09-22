@@ -16,7 +16,7 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 
 	wire [31:0] shiftR0, shiftR1,shiftR2,shiftR3,shiftR4; 	
 	
-	wire[31:0] shiftLL_result, shiftAR_result, shift_result;
+	wire[31:0] shiftLL_result, shiftRA_result, shift_result;
 	
 	// Checkpoint 1:
 	// ADD, SUBTRACT
@@ -55,10 +55,10 @@ module alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_res
 	shiftLL_by_5bit shiftLL(data_operandA, ctrl_shiftamt, shiftLL_result);
 	
 	// Compute shift right.
-//	shiftAR_by_5bit shiftAR(data_operandA, ctrl_shiftamt, shiftAR_result);
+	shiftRA_by_5bit shiftRA(data_operandA, ctrl_shiftamt, shiftRA_result);
 	
 	// Select shift left or right output.
-	mux_2_1 select_shift(shiftLL_result, shiftAR_result, ctrl_ALUopcode[0], shift_result);
+	mux_2_1 select_shift(shiftLL_result, shiftRA_result, ctrl_ALUopcode[0], shift_result);
 	
 	
 	// Select shift or arith_logic output. 

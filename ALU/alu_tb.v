@@ -35,7 +35,7 @@ module alu_tb();
         checkAdd();
         checkSub();
         checkSLL();
-        //checkSRA();
+        checkSRA();
 
         checkNE();
         checkLT();
@@ -191,6 +191,7 @@ module alu_tb();
             assign data_operandB = 32'h00000000;
 
             @(negedge clock);
+				//@(negedge clock);
             if(data_result !== 32'h00000000) begin
                 $display("**Error in SUB (test 10); expected: %h, actual: %h", 32'h00000000, data_result);
                 errors = errors + 1;
