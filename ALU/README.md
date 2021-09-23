@@ -1,5 +1,5 @@
 # Full Alu Implementation - Checkpoint 2
-## NetID : hma23 , Casper's ID
+## NetID : hma23 , ph139
 
 #### ALU opcode
     we divided the operations to three units by looking to each bit in each column , the first column represent arithmetic operations (ADD / SUB),
