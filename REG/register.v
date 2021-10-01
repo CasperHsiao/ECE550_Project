@@ -2,7 +2,6 @@ module register(q, d, clk, en, clr);
 	input [31:0] d;
 	input clk, en, clr;
 	output [31:0] q;
-	
 //	genvar i;
 //		generate
 //			for (i = 0; i < 31; i = i+1)
@@ -10,6 +9,7 @@ module register(q, d, clk, en, clr);
 //				dffe_ref dff0(q[i], d[i], clk, en, clr);
 //			end
 //	endgenerate
+
 	dffe_ref dff0(q[0], d[0], clk, en, clr);
 	dffe_ref dff1(q[1], d[1], clk, en, clr);
 	dffe_ref dff2(q[2], d[2], clk, en, clr);
@@ -42,6 +42,7 @@ module register(q, d, clk, en, clr);
 	dffe_ref dff29(q[29], d[29], clk, en, clr);
 	dffe_ref dff30(q[30], d[30], clk, en, clr);
 	dffe_ref dff31(q[31], d[31], clk, en, clr);
+	
 	
 	
 
