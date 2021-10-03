@@ -51,7 +51,6 @@ set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
 set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
 set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
-set_global_assignment -name VERILOG_FILE "../../Users/HussainAlkhateeb/Desktop/lab 6/led_test.v"
 set_location_assignment PIN_AG15 -to clk
 set_location_assignment PIN_F19 -to led_high[1]
 set_location_assignment PIN_G19 -to led_high[0]
@@ -59,8 +58,6 @@ set_location_assignment PIN_E22 -to led_low[1]
 set_location_assignment PIN_E21 -to led_low[0]
 set_location_assignment PIN_AC28 -to rst_n
 set_location_assignment PIN_AB28 -to s0
-set_global_assignment -name VERILOG_FILE "../../Users/HussainAlkhateeb/Desktop/lab 6/twobitadder.v"
-set_global_assignment -name VERILOG_FILE "../../Users/HussainAlkhateeb/Desktop/lab 6/sevensegment.v"
 set_location_assignment PIN_F22 -to HEX0[1]
 set_location_assignment PIN_G18 -to HEX0[0]
 set_location_assignment PIN_E17 -to HEX0[2]
@@ -80,10 +77,15 @@ set_location_assignment PIN_AB27 -to a[0]
 set_location_assignment PIN_AB26 -to b[1]
 set_location_assignment PIN_AD26 -to b[0]
 set_location_assignment PIN_AC24 -to cin
-set_global_assignment -name VERILOG_FILE "../../Users/HussainAlkhateeb/Desktop/lab 6/threebitadder.v"
+set_location_assignment PIN_AB25 -to c[1]
+set_location_assignment PIN_AC25 -to c[0]
+set_global_assignment -name VERILOG_FILE twobitadder.v
+set_global_assignment -name VERILOG_FILE threebitadder.v
+set_global_assignment -name VERILOG_FILE sevensegment.v
+set_global_assignment -name VERILOG_FILE led_test.v
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_location_assignment PIN_AB25 -to c[1]
-set_location_assignment PIN_AC25 -to c[0]
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

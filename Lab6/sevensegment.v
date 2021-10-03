@@ -1,7 +1,8 @@
-module sevensegment(
-	input [4:0]in2,
-	output reg[6:0]display
-);
+module sevensegment(in2, display);
+	input [4:0]in2;
+	output [6:0]display;
+	reg [6:0]display;
+	
 always@(*) begin
     case(in2)
     0 : display = 7'b0000001;
