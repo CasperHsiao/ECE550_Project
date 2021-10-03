@@ -91,10 +91,10 @@ module regfile_tb();
                 errors = errors + 1;
             end
 
-            if(data_readRegB !== exp) begin
-                $display("**Error on port B: read %h but expected %h.", data_readRegB, exp);
-                errors = errors + 1;
-            end
+//            if(data_readRegB !== exp) begin
+//                $display("**Error on port B: read %h but expected %h.", data_readRegB, exp);
+//                errors = errors + 1;
+//            end
         end
     endtask
 endmodule
