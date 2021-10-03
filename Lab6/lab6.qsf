@@ -72,13 +72,11 @@ set_location_assignment PIN_W22 -to HEX1[3]
 set_location_assignment PIN_W25 -to HEX1[4]
 set_location_assignment PIN_U23 -to HEX1[5]
 set_location_assignment PIN_U24 -to HEX1[6]
-set_location_assignment PIN_AC26 -to a[1]
-set_location_assignment PIN_AB27 -to a[0]
-set_location_assignment PIN_AB26 -to b[1]
-set_location_assignment PIN_AD26 -to b[0]
-set_location_assignment PIN_AC24 -to cin
-set_location_assignment PIN_AB25 -to c[1]
-set_location_assignment PIN_AC25 -to c[0]
+set_location_assignment PIN_AD26 -to a[1]
+set_location_assignment PIN_AC26 -to a[0]
+set_location_assignment PIN_AB25 -to b[1]
+set_location_assignment PIN_AC25 -to b[0]
+set_location_assignment PIN_AB24 -to cin
 set_global_assignment -name VERILOG_FILE twobitadder.v
 set_global_assignment -name VERILOG_FILE threebitadder.v
 set_global_assignment -name VERILOG_FILE sevensegment.v
@@ -88,4 +86,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_AB26 -to a[2]
+set_location_assignment PIN_AC24 -to b[2]
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

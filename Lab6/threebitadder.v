@@ -1,25 +1,18 @@
-module threebitadder(a, b, c, cin, HEX1, HEX0);
-	input [1:0]a,b,c;
-	input cin;
-	output [0:6] HEX1,HEX0;
-	
-	reg [4:0]sum,cout;
-	reg [4:0] temp1, temp2;
+module threebitadder(a, b, cin, HEX1, HEX0);
+    input [2:0]a,b;
+    input cin;
+    output [0:6] HEX1,HEX0;
 
+    reg [3:0]sum, cout,sum1;
+	 
 always@(*) begin
  
-	cout <= 0;
-	sum <= a + b + c+cin;
-	if (sum == 5'b11111) begin
-		temp1 <= 5'b00000;
-		temp2 <= 5'b00001;
-	end 
-	else begin	
-		temp1 <= sum;
-		temp2 <= cout;
-	end
+    cout <= (a+b+cin)/10;
+    sum <= (a + b + cin) % 10;
+
+
 end
-	sevensegment sevensegment2(temp1,HEX0);
-	sevensegment sevensegment3(temp2,HEX1);
+    sevensegment sevensegment0(sum,HEX0);
+    sevensegment sevensegment1(cout,HEX1);
 
 endmodule
