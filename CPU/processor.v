@@ -91,5 +91,40 @@ module processor(
     input [31:0] data_readRegA, data_readRegB;
 
     /* YOUR CODE STARTS HERE */
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	wire[31:0] pc_out, pc_in;
+	pc program_counter(pc_in, pc_out, clock, reset);
+	four_byte_CSA pc_plus4(pc_out, 32'd1, 32'd0, pc_in);
+
+	// imem startup with imem.mif
+	// dmem startup with dmem.mif
+		// reset Regfile
+		// output 
+		
+
+
+
+
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Imem Section
+
+	// Decode q_imem
+	// R-type: Opcode = !a!b!c!d!e
+	// I-type: Opcode = !ab!c!d!e+!a!bce+!a!bd!e
+	// JI-type: Opcode = a!bcd!e + a!bc!de + !a!b!ce ,- else statement
+	// JII-type: Opcode = !a!bc!d!e
+
+
+
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Regfile Section
+
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Dmem Section
+
 
 endmodule
