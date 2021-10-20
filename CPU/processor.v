@@ -95,11 +95,13 @@ module processor(
 	wire[31:0] pc_out, pc_in;
 	pc program_counter(pc_in, pc_out, clock, reset);
 	four_byte_CSA pc_plus4(pc_out, 32'd1, 32'd0, pc_in);
+	
 
-	// imem startup with imem.mif
-	// dmem startup with dmem.mif
-		// reset Regfile
-		// output 
+	
+	
+	
+	
+
 		
 
 
@@ -115,14 +117,51 @@ module processor(
 	// I-type: Opcode = !ab!c!d!e+!a!bce+!a!bd!e
 	// JI-type: Opcode = a!bcd!e + a!bc!de + !a!b!ce ,- else statement
 	// JII-type: Opcode = !a!bc!d!e
+	wire[31:0] insn;
+	assign address_imem = [11:0]pc_out;
+	assign insn = q_imem;
+
+	
+	
 
 
 
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Instruction Deconde Section
+	wire[5:0] opCode;
+	assign opCode = [31:27]insn;
+	wire is_Rtype, is_addi, is_lw, is_sw;
+	wire DMwe, Rwe, Rwd, Rdst, ALUinB;
+	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, Rdst, ALUinB);
+	wire [4:0]ALUopCode, shamt;
+	assign ALUopCode = is_Rtype ? [6:2]insn : 5'd0;
+	assign shamt = is_Rtype ? [11:7]insn : 5'd0;
+	
+	wire [4:0]rd, rs. rt;
+	assign rd = [26:22]insn;
+	assign rs = [21:17]insn;
+	assign rt = is_Rtype ? [16:12]insn : 5'd0;
+	wire [16:0] imm;
+	assign imm = is_Rtype ? 17'd0 : [16:0]insn;
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Regfile Section
-
-
+    //output [31:0] data_writeReg;
+    //input [31:0] data_readRegA, data_readRegB;
+	
+	assign ctrl_writeEnable = Rwe;
+	assign ctrl_writeReg = rd;
+	assign ctrl_readRegA = rs;
+	assign ctrl_readRegb = rt;
+	
+		
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ALU Section
+	//sign extention for imm
+	// assign data_operandB = isRtype ? data_readRegB : sx imm;
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Dmem Section
 
