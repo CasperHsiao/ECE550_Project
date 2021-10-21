@@ -92,7 +92,7 @@ module processor(
 
     /* YOUR CODE STARTS HERE */
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	wire[31:0] pc_out, pc_in;
+	wire [31:0] pc_out, pc_in;
 	pc program_counter(pc_in, pc_out, clock, reset);
 	four_byte_CSA pc_plus4(pc_out, 32'd1, 32'd0, pc_in);
 	
@@ -117,8 +117,8 @@ module processor(
 	// I-type: Opcode = !ab!c!d!e+!a!bce+!a!bd!e
 	// JI-type: Opcode = a!bcd!e + a!bc!de + !a!b!ce ,- else statement
 	// JII-type: Opcode = !a!bc!d!e
-	wire[31:0] insn;
-	assign address_imem = [11:0]pc_out;
+	wire [31:0] insn;
+	assign address_imem = pc_out[11:0];
 	assign insn = q_imem;
 
 	
@@ -129,41 +129,51 @@ module processor(
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Instruction Deconde Section
-	wire[5:0] opCode;
-	assign opCode = [31:27]insn;
+	wire [5:0] opCode;
+	assign opCode = insn[31:27];
 	wire is_Rtype, is_addi, is_lw, is_sw;
 	wire DMwe, Rwe, Rwd, Rdst, ALUinB;
 	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, Rdst, ALUinB);
-	wire [4:0]ALUopCode, shamt;
-	assign ALUopCode = is_Rtype ? [6:2]insn : 5'd0;
-	assign shamt = is_Rtype ? [11:7]insn : 5'd0;
 	
-	wire [4:0]rd, rs. rt;
-	assign rd = [26:22]insn;
-	assign rs = [21:17]insn;
-	assign rt = is_Rtype ? [16:12]insn : 5'd0;
+	wire [4:0] rd, rs, rt;
+	assign rd = insn[26:22];
+	assign rs = insn[21:17];
+//	assign rt = is_Rtype ? insn[16:12] : 5'd0;
+	assign rt = insn[16:12];
 	wire [16:0] imm;
-	assign imm = is_Rtype ? 17'd0 : [16:0]insn;
+//	assign imm = is_Rtype ? 17'd0 : insn[16:0];
+	assign imm = insn[16:0];
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Regfile Section
     //output [31:0] data_writeReg;
-    //input [31:0] data_readRegA, data_readRegB;
-	
 	assign ctrl_writeEnable = Rwe;
 	assign ctrl_writeReg = rd;
 	assign ctrl_readRegA = rs;
-	assign ctrl_readRegb = rt;
+	assign ctrl_readRegB = rt;
 	
 		
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ALU Section
-	//sign extention for imm
-	// assign data_operandB = isRtype ? data_readRegB : sx imm;
+	wire [4:0] ctrl_ALUopcode, ctrl_shiftamt;
+	assign ctrl_ALUopcode = is_Rtype ? insn[6:2] : 5'd0;
+	assign ctrl_shiftamt = is_Rtype ? insn[11:7] : 5'd0;
+	wire [31:0] sx_imm;
+	assign sx_imm = {{15{imm[16]}},imm};
+	wire [31:0] data_operandA, data_operandB, data_result;
+	wire isNotEqual, isLessThan, overflow;
+	assign data_operandA = data_readRegA;
+	assign data_operandB = ALUinB ? sx_imm : data_readRegB;
+	alu execution(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_result, isNotEqual, isLessThan, overflow);
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Dmem Section
+	assign address_dmem = data_result[11:0];
+	assign data = data_readRegB;
+	assign wren = DMwe;
+	assign data_writeReg = Rwd ? q_dmem : data_result;
+	
 
 
 endmodule
