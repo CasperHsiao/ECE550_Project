@@ -70,6 +70,7 @@ module processor(
     data_writeReg,                  // O: Data to write to for regfile
     data_readRegA,                  // I: Data from port A of regfile
     data_readRegB                   // I: Data from port B of regfile
+	
 );
     // Control signals
     input clock, reset;
@@ -93,21 +94,9 @@ module processor(
     /* YOUR CODE STARTS HERE */
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	wire [31:0] pc_out, pc_in;
+	// output [31:0] pc_out;
 	pc program_counter(pc_in, pc_out, clock, reset);
 	four_byte_CSA pc_plus4(pc_out, 32'd1, 32'd0, pc_in);
-	
-
-	
-	
-	
-	
-
-		
-
-
-
-
-
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Imem Section
@@ -120,12 +109,6 @@ module processor(
 	wire [31:0] insn;
 	assign address_imem = pc_out[11:0];
 	assign insn = q_imem;
-
-	
-	
-
-
-
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Instruction Deconde Section
