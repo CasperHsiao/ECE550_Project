@@ -10,7 +10,7 @@
  */
 
 module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_clock,
-				q_imem, data_readRegA, data_readRegB, data_writeReg, data, reg12, reg13);
+				q_imem, data_readRegA, data_readRegB, data_writeReg, data, reg10, reg11, reg12, reg13);
     input clock, reset;
     /* 
         Create four clocks for each module from the original input "clock".
@@ -21,12 +21,12 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
     */
     output imem_clock, dmem_clock, processor_clock, regfile_clock;
 	wire imem_clock, dmem_clock, processor_clock, regfile_clock;
-	assign imem_clock = clock;
-	clock_2 dmemClock(clock, reset, dmem_clock);
+	assign dmem_clock = clock;
+	clock_2 regfileClock(clock, reset, regfile_clock);
 	clock_4 processorClock(clock, reset, processor_clock);
-	assign regfile_clock = processor_clock;
+	assign imem_clock = processor_clock;
 	
-	output [31:0] q_imem, data_readRegA, data_readRegB, data_writeReg, data, reg12, reg13;
+	output [31:0] q_imem, data_readRegA, data_readRegB, data_writeReg, data, reg10, reg11, reg12, reg13;
 	
 	
 
@@ -49,11 +49,11 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
     wire wren;
     wire [31:0] q_dmem;
     dmem my_dmem(
-        .address    (/* 12-bit wire */),       // address of data
+        .address    (address_dmem),       // address of data
         .clock      (dmem_clock),                  // may need to invert the clock
-        .data	    (/* 32-bit data in */),    // data you want to write
-        .wren	    (/* 1-bit signal */),      // write enable
-        .q          (/* 32-bit data out */)    // data from dmem
+        .data	    (data),    // data you want to write
+        .wren	    (wren),      // write enable
+        .q          (q_dmem)   // data from dmem
     );
 
     /** REGFILE **/
@@ -72,6 +72,8 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
         data_writeReg,
         data_readRegA,
         data_readRegB,
+		reg10,
+		reg11,
 		reg12,
 		reg13
     );

@@ -115,21 +115,21 @@ module processor(
 	wire [5:0] opCode;
 	assign opCode = insn[31:27];
 	wire is_Rtype, is_addi, is_lw, is_sw;
-	wire DMwe, Rwe, Rwd, Rdst, ALUinB;
-	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, Rdst, ALUinB);
+	wire DMwe, Rwe, Rwd, ReadRd, ALUinB;
+	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB);
 	
 	wire [4:0] rd, rs, rt;
 	assign rd = insn[26:22];
 	assign rs = insn[21:17];
-//	assign rt = is_Rtype ? insn[16:12] : 5'd0;
-	assign rt = insn[16:12];
+	assign rt = ReadRd ? insn[26:22] : insn[16:12];
 	wire [16:0] imm;
-//	assign imm = is_Rtype ? 17'd0 : insn[16:0];
 	assign imm = insn[16:0];
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Regfile Section
     //output [31:0] data_writeReg;
+	// sw: readreg from rd
+	// lw: writeReg = rd
 	assign ctrl_writeEnable = Rwe;
 	assign ctrl_writeReg = rd;
 	assign ctrl_readRegA = rs;

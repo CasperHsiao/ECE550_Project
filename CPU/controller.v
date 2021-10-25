@@ -1,7 +1,7 @@
-module controller(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, Rdst, ALUinB);
+module controller(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB);
 	input [4:0]opCode;
 	output is_Rtype, is_addi, is_lw, is_sw;
-	output DMwe, Rwe, Rwd, Rdst, ALUinB;
+	output DMwe, Rwe, Rwd, ReadRd, ALUinB;
 	
 	wire [4:0]opCode;
 	wire is_Rtype, is_addi, is_lw, is_sw;
@@ -15,7 +15,7 @@ module controller(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, Rdst,
 	assign DMwe = is_sw;
 	assign Rwe = is_Rtype|is_addi|is_lw;
 	assign Rwd = is_lw;
-	assign Rdst = ~is_Rtype;
+	assign ReadRd = is_sw;
 	assign ALUinB = is_addi|is_lw|is_sw;
 	
 endmodule
