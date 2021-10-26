@@ -10,7 +10,7 @@
  */
 
 module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_clock,
-				q_imem, data_readRegA, data_readRegB, data_writeReg, data, reg10, reg11, reg12, reg13);
+				q_imem, data_readRegA, data_readRegB, data_writeReg, data);
     input clock, reset;
     /* 
         Create four clocks for each module from the original input "clock".
@@ -26,7 +26,7 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
 	clock_4 processorClock(clock, reset, processor_clock);
 	assign imem_clock = processor_clock;
 	
-	output [31:0] q_imem, data_readRegA, data_readRegB, data_writeReg, data, reg10, reg11, reg12, reg13;
+	output [31:0] q_imem, data_readRegA, data_readRegB, data_writeReg, data;
 	
 	
 
@@ -71,11 +71,7 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
         ctrl_readRegB,
         data_writeReg,
         data_readRegA,
-        data_readRegB,
-		reg10,
-		reg11,
-		reg12,
-		reg13
+        data_readRegB
     );
 
     /** PROCESSOR **/

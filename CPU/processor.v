@@ -94,18 +94,11 @@ module processor(
     /* YOUR CODE STARTS HERE */
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	wire [31:0] pc_out, pc_in;
-	// output [31:0] pc_out;
 	pc program_counter(pc_in, pc_out, clock, reset);
 	four_byte_CSA pc_plus4(pc_out, 32'd1, 32'd0, pc_in);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Imem Section
-
-	// Decode q_imem
-	// R-type: Opcode = !a!b!c!d!e
-	// I-type: Opcode = !ab!c!d!e+!a!bce+!a!bd!e
-	// JI-type: Opcode = a!bcd!e + a!bc!de + !a!b!ce ,- else statement
-	// JII-type: Opcode = !a!bc!d!e
 	wire [31:0] insn;
 	assign address_imem = pc_out[11:0];
 	assign insn = q_imem;
@@ -119,6 +112,7 @@ module processor(
 	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB);
 	
 	wire [4:0] rd, rs, rt;
+//	assign rd = overflow ? 5'b11110 : insn[26:22];	
 	assign rd = insn[26:22];
 	assign rs = insn[21:17];
 	assign rt = ReadRd ? insn[26:22] : insn[16:12];
@@ -127,9 +121,6 @@ module processor(
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Regfile Section
-    //output [31:0] data_writeReg;
-	// sw: readreg from rd
-	// lw: writeReg = rd
 	assign ctrl_writeEnable = Rwe;
 	assign ctrl_writeReg = rd;
 	assign ctrl_readRegA = rs;
@@ -150,11 +141,22 @@ module processor(
 	assign data_operandB = ALUinB ? sx_imm : data_readRegB;
 	alu execution(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_result, isNotEqual, isLessThan, overflow);
 	
+//	/////////////////////////////////////////////////////////////////////////////////////////////////////
+//	// Process overflow
+//	wire is_rAdd, is_rSub;
+//	wire [31:0] rStatus;
+//	assign is_rAdd = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(~ctrl_ALUopcode[0]);
+//	assign is_rSub = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(ctrl_ALUopcode[0]);
+//	assign rStatus = is_rAdd ? 32'd1 : is_rSub ? 32'd3 : is_addi ? 32'd2 : 32'd0;
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Dmem Section
 	assign address_dmem = data_result[11:0];
 	assign data = data_readRegB;
 	assign wren = DMwe;
+//	wire [31:0] write_data;
+//	assign write_data = Rwd ? q_dmem : overflow ? rStatus : data_result;
+//	assign data_writeReg = write_data;
 	assign data_writeReg = Rwd ? q_dmem : data_result;
 	
 
