@@ -1,59 +1,55 @@
-# Full ALU Implementation - Checkpoint 2
+# Simple Processor Implementation - Checkpoint 4
 ## NetID : hma23 , ph139
-
 
 
 ## Design Implementation
 **Modules:**
 <ul>
+<li>processor(clock,reset,address_imem,q_imem,address_dmem,q_dmem,cctrl_writeEnable,ctrl_writeReg,ctrl_readRegA,ctrl_readRegB,data_writeReg,ddata_readRegA,data_readRegB)</li>
 <li>alu(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_result, isNotEqual, isLessThan, overflow)</li>
 <li> four_byte_CSA(a, b, ci, s, co, overflow)</li>
 <li>mux_2_1(a , b, sel, out)</li>
-<li>byte_RCA(a, b, ci, s, co)</li>
-<li>byte_RCA_last(a, b, ci, s, co, overflow)</li>
 <li>full_adder(a, b, ci, s, co)</li>
-<li>shiftLL_by_5bit(data_operandA, ctrl_shiftamt, shiftLL_result)</li>
-<li>shiftRA_by_5bit(data_operandA, ctrl_shiftamt, shiftLL_result)</li>
+<li>regfile(
+	clock, ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
+	ctrl_readRegA, ctrl_readRegB, data_writeReg, data_readRegA,
+	data_readRegB
+)</li>
+<li>pc(pc_in, pc_out, clock, reset)</li>
+<li>controller(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB)</li>
+<li>clock_2 (clock_in, reset, clock_out);</li>
+<li>clock_4 (clock_in, reset, clock_out);</li>
 </ul>
 
-### ALU - top level entity
-We labeled the first three bits of the `ctrl_ALUopcode` by `s2s1s0`, the first bit `s0` selects (ADD | SUB) for arithmetic operations, (AND | OR ) for logic operations, and (Logical Left | Arithmetic Right) for shift operation. Then, we use the second bit `s1` to select between arithmetic operation and logical operation. Lastly, we use the third bit `s2` to select the previous result and shift operation to output `data_result`.
+### Program Counter "PC"
 
-**Arithmetic operation**: Implemented the addition and subtraction functions using the `four_byte_CSA` module. First, we negated the `data_operand_B` and used the `mux_2_1` with the `ctrl_ALUopcode` to select the correct operand for our `four_byte_CSA`. Then, we used the `ctrl_ALUopcode` as the carry in of the `four_byte_CSA` to compute either the addition or subtraction.
+We started of with the PC , which is basically a 32 DFFEs . PC takes in 32 bits and outputs 32 bits which are then connected to our adder to add four.
+### controller and instruction decode
 
-### Logic bitwise AND
-we implemented bitwise AND by looping through each bit in operandA anding it with operandB , using the genvar loop, we then
-store the value in data_result.
+We assign the controller based on the given OPcodes in the pdf file.
+For example , For R-type instruction we set is_Rtype to 00000, is_addi to 00101, is_lw to 01000, is_sw to 00111, using the opcode as an input.
 
-### Logic bitwise OR
-we implemented bitwise OR by looping through each bit in operandA oring it with operandB , using the genvar loop, we then
-store the value in data_result.
+For the Enables , that is DMwe,Rwe,Rwd,ReadRd,and ALUinB. we assign (for now since we may need to adjust this in CP5):-
+DMwe to is_sw (we eneable data write if the instruction is sw)
+Rwe to is_Rtype|is_addi|is_lw (we enable Register write if the instruction is R type or immediate or lw)
+Rwd to is_lw (we set Rwd if we it is lw)
+ReadRd is_sw (We use this flag so we can deal with rt correctly)
+ALUinB is_addi|is_lw|is_sw (if we need register B to bypass the ALU and do immediate instruction)
 
-### Shift Logical Left
-Our Implementation followed the slides that were given by the instructor. we used 5 layers of muxes since the shift amount
-limit is 5 bits. this will allow us to shift to the desired amount feeding 0's to the right of the number because each layer
-of muxes is connected to the previous one ,and the first layer is connected with a zero
+For this CP we had to implement R and I type only. Hence, we assign rt
+to either [26:22] or [16: 12] based on ReadRd since for store word we need to read from
+rt.
 
-### Shift Arithmetic Right
-we used similar approach for shift logical left , that is , we used 5 layers of muxes since the shift amount limit
-is 5 bits. this time however, we shift to the right feeding 0's to the left while keeping the sign of the integer
-preserved
+### Regfile
 
-### Less Than
-To check if A is strictly less than B , we had to check our results after subtraction, we then extract the last
-bit of the our result. If our result is negative (last bit = 1) we know A is less than B, otherwise , B is greater
-than or equal to A
+we assign the ctrl_writeEnable to Rwe, ctrl_writeReg to rd.
+and ctrl_readRegA to rs . ctrl_readRegB to rt.
 
-### Not equal
-we used our bitwise OR loop to through each bit with the next bit of our arithmetic result, leaving us with 31 bit as result
-of the loop we then assign the last bit of the or result to the result of not equal (if the last bit of or loop is 1) then,
-A is not equal to B. because there was at least one bit that is 1 and therefore, our arithmetic result doesn't equal to zero
+(see the controller and instruction decode section above for the logic).
 
-### four_byte_CSA:
-Implemented the 32 bits carry select adder using four 8 bits ripple carry adder, `byte_RCA`. The last 8 bits (31:24) computation uses the `byte_RCA_last` to obtain the overflow of the overall computation.
-
-### byte_RCA and byte_RCA_last:
-Implemented 8 bits ripple carry adder by using 8 full adders, `full_adder`. The difference between `byte_RCA` and `byte_RCA_last` is that the later have an extra output that determines if overflow occured.
-
-### full_adder:
-Implemented the full adder at the gate level.
+### ALU
+TODO
+### Process overflow
+TODO
+### Dmem
+TODO
