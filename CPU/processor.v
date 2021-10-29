@@ -72,7 +72,9 @@ module processor(
     data_readRegB,
 	 rStatus,
 	 rd,
-	 overflow// I: Data from port B of regfile
+	 overflow,
+	 data_operandA,
+	 data_operandB// I: Data from port B of regfile
 	
 );
     // Control signals
@@ -112,7 +114,8 @@ module processor(
 	assign opCode = insn[31:27];
 	wire is_Rtype, is_addi, is_lw, is_sw;
 	wire DMwe, Rwe, Rwd, ReadRd, ALUinB;
-	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB);
+	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB,
+										is_j, is_bne, is_jal, is_jr, is_blt);
 	
 	wire [4:0] rd, rs, rt;
 	output [4:0] rd;
@@ -127,7 +130,7 @@ module processor(
 //	// Process overflow
 	wire is_rAdd, is_rSub;
 	wire [31:0] rStatus;
-	output [31:0] rStatus;
+	output [31:0] rStatus, data_operandA, data_operandB;
 	assign is_rAdd = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(~ctrl_ALUopcode[0]);
 	assign is_rSub = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(ctrl_ALUopcode[0]);
 	assign rStatus = is_rAdd ? 32'd1 : is_rSub ? 32'd3 : is_addi ? 32'd2 : 32'd0;
