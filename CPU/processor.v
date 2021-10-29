@@ -69,7 +69,10 @@ module processor(
     ctrl_readRegB,                  // O: Register to read from port B of regfile
     data_writeReg,                  // O: Data to write to for regfile
     data_readRegA,                  // I: Data from port A of regfile
-    data_readRegB                   // I: Data from port B of regfile
+    data_readRegB,
+	 rStatus,
+	 rd,
+	 overflow// I: Data from port B of regfile
 	
 );
     // Control signals
@@ -112,15 +115,29 @@ module processor(
 	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB);
 	
 	wire [4:0] rd, rs, rt;
-//	assign rd = overflow ? 5'b11110 : insn[26:22];	
-	assign rd = insn[26:22];
+	output [4:0] rd;
+	assign rd = (is_rAdd|is_addi|is_rSub) ? (overflow ? 5'd30 : insn[26:22]) : insn[26:22];	
+//	assign rd = insn[26:22];
 	assign rs = insn[21:17];
 	assign rt = ReadRd ? insn[26:22] : insn[16:12];
 	wire [16:0] imm;
 	assign imm = insn[16:0];
 	
+//	/////////////////////////////////////////////////////////////////////////////////////////////////////
+//	// Process overflow
+	wire is_rAdd, is_rSub;
+	wire [31:0] rStatus;
+	output [31:0] rStatus;
+	assign is_rAdd = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(~ctrl_ALUopcode[0]);
+	assign is_rSub = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(ctrl_ALUopcode[0]);
+	assign rStatus = is_rAdd ? 32'd1 : is_rSub ? 32'd3 : is_addi ? 32'd2 : 32'd0;
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Regfile Section
+	wire [31:0] write_data;
+	assign write_data = Rwd ? q_dmem : (is_rAdd|is_addi|is_rSub) ? (overflow ? rStatus : data_result) :data_result;
+	assign data_writeReg = write_data;
+//	assign data_writeReg = Rwd ? q_dmem : data_result;
 	assign ctrl_writeEnable = Rwe;
 	assign ctrl_writeReg = rd;
 	assign ctrl_readRegA = rs;
@@ -137,27 +154,18 @@ module processor(
 	assign sx_imm = {{15{imm[16]}},imm};
 	wire [31:0] data_operandA, data_operandB, data_result;
 	wire isNotEqual, isLessThan, overflow;
+	output overflow;
 	assign data_operandA = data_readRegA;
 	assign data_operandB = ALUinB ? sx_imm : data_readRegB;
 	alu execution(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_result, isNotEqual, isLessThan, overflow);
 	
-//	/////////////////////////////////////////////////////////////////////////////////////////////////////
-//	// Process overflow
-//	wire is_rAdd, is_rSub;
-//	wire [31:0] rStatus;
-//	assign is_rAdd = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(~ctrl_ALUopcode[0]);
-//	assign is_rSub = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(ctrl_ALUopcode[0]);
-//	assign rStatus = is_rAdd ? 32'd1 : is_rSub ? 32'd3 : is_addi ? 32'd2 : 32'd0;
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Dmem Section
 	assign address_dmem = data_result[11:0];
 	assign data = data_readRegB;
 	assign wren = DMwe;
-//	wire [31:0] write_data;
-//	assign write_data = Rwd ? q_dmem : overflow ? rStatus : data_result;
-//	assign data_writeReg = write_data;
-	assign data_writeReg = Rwd ? q_dmem : data_result;
+
 	
 
 
