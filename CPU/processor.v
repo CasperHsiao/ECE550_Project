@@ -98,10 +98,12 @@ module processor(
 
     /* YOUR CODE STARTS HERE */
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	wire [31:0] pc_out, pc_in;
-	pc program_counter(pc_in, pc_out, clock, reset);
-	four_byte_CSA pc_plus4(pc_out, 32'd1, 32'd0, pc_in);
-
+	wire [31:0] pc_out, pc_plus4, pc_plusImm, mux_BR, mux_J;
+	pc program_counter(mux_J, pc_out, clock, reset);
+	four_byte_CSA pc_plus0(pc_out, 32'd1, 32'd0, pc_plus4);
+	four_byte_CSA pc_plus1(pc_out, sx_imm, 32'd0, pc_plusImm);
+	assign mux_BR = (is_blt & (~isLessThan) & isNotEqual | is_bne & isNotEqual) ? pc_plusImm : pc_plus4;
+	assign mux_J = is_jr ? data_readRegB : (is_bex & isNotEqual) ? usx_T : ((is_j | is_jal) ? usx_T : mux_BR);
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Imem Section
 	wire [31:0] insn;
@@ -112,19 +114,27 @@ module processor(
 	// Instruction Deconde Section
 	wire [5:0] opCode;
 	assign opCode = insn[31:27];
-	wire is_Rtype, is_addi, is_lw, is_sw;
+	wire is_Rtype, is_addi, is_lw, is_sw, is_j, is_bne, is_jal, is_jr, is_blt, is_bex, is_setx;
 	wire DMwe, Rwe, Rwd, ReadRd, ALUinB;
 	controller control_signals(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadRd, ALUinB,
-										is_j, is_bne, is_jal, is_jr, is_blt);
+										is_j, is_bne, is_jal, is_jr, is_blt, is_bex, is_setx);
 	
 	wire [4:0] rd, rs, rt;
 	output [4:0] rd;
-	assign rd = (is_rAdd|is_addi|is_rSub) ? (overflow ? 5'd30 : insn[26:22]) : insn[26:22];	
-//	assign rd = insn[26:22];
-	assign rs = insn[21:17];
-	assign rt = ReadRd ? insn[26:22] : insn[16:12];
+	wire [4:0] detect_ovf;
+	assign detect_ovf = (is_rAdd|is_addi|is_rSub) ? (overflow ? 5'd30 : insn[26:22]) : insn[26:22];	
+	assign rd = is_setx ? 5'd30 : is_jal ? 5'd31 : detect_ovf;
+	assign rs = is_bex ? 5'd0 : insn[21:17];
+	assign rt = is_bex ? 5'd30 : ReadRd ? insn[26:22] : insn[16:12];
+	
 	wire [16:0] imm;
 	assign imm = insn[16:0];
+	wire [31:0] sx_imm;
+	assign sx_imm = {{15{imm[16]}},imm};
+	
+	wire [26:0] target;
+	assign target = insn[26:0];
+	wire [31:0] usx_T = {5'd0, target};
 	
 //	/////////////////////////////////////////////////////////////////////////////////////////////////////
 //	// Process overflow
@@ -139,8 +149,7 @@ module processor(
 	// Regfile Section
 	wire [31:0] write_data;
 	assign write_data = Rwd ? q_dmem : (is_rAdd|is_addi|is_rSub) ? (overflow ? rStatus : data_result) :data_result;
-	assign data_writeReg = write_data;
-//	assign data_writeReg = Rwd ? q_dmem : data_result;
+	assign data_writeReg = is_setx ? usx_T : is_jal ? pc_plus4 : write_data;
 	assign ctrl_writeEnable = Rwe;
 	assign ctrl_writeReg = rd;
 	assign ctrl_readRegA = rs;
@@ -151,10 +160,8 @@ module processor(
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// ALU Section
 	wire [4:0] ctrl_ALUopcode, ctrl_shiftamt;
-	assign ctrl_ALUopcode = is_Rtype ? insn[6:2] : 5'd0;
+	assign ctrl_ALUopcode = is_Rtype ? insn[6:2] : (is_bne | is_blt | is_bex) ? 5'd1 : 5'd0;
 	assign ctrl_shiftamt = is_Rtype ? insn[11:7] : 5'd0;
-	wire [31:0] sx_imm;
-	assign sx_imm = {{15{imm[16]}},imm};
 	wire [31:0] data_operandA, data_operandB, data_result;
 	wire isNotEqual, isLessThan, overflow;
 	output overflow;
