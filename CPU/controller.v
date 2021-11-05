@@ -22,9 +22,9 @@ module controller(opCode, is_Rtype, is_addi, is_lw, is_sw, DMwe, Rwe, Rwd, ReadR
 	assign is_setx = (opCode[4])&(~opCode[3])&(opCode[2])&(~opCode[1])&(opCode[0]);//10101
 
 	assign DMwe = is_sw;
-	assign Rwe = is_Rtype|is_addi|is_lw;
+	assign Rwe = is_Rtype|is_addi|is_lw|is_setx;
 	assign Rwd = is_lw;
-	assign ReadRd = is_sw;
+	assign ReadRd = is_sw | is_jr;
 	assign ALUinB = is_addi|is_lw|is_sw;
 	
 endmodule

@@ -123,7 +123,7 @@ module processor(
 	output [4:0] rd;
 	wire [4:0] detect_ovf;
 	assign detect_ovf = (is_rAdd|is_addi|is_rSub) ? (overflow ? 5'd30 : insn[26:22]) : insn[26:22];	
-	assign rd = is_setx ? 5'd30 : is_jal ? 5'd31 : detect_ovf;
+	assign rd = is_setx ? 5'd30 : is_jal ? 5'd31 : detect_ovf; //correct
 	assign rs = is_bex ? 5'd0 : insn[21:17];
 	assign rt = is_bex ? 5'd30 : ReadRd ? insn[26:22] : insn[16:12];
 	
@@ -149,7 +149,7 @@ module processor(
 	// Regfile Section
 	wire [31:0] write_data;
 	assign write_data = Rwd ? q_dmem : (is_rAdd|is_addi|is_rSub) ? (overflow ? rStatus : data_result) :data_result;
-	assign data_writeReg = is_setx ? usx_T : is_jal ? pc_plus4 : write_data;
+	assign data_writeReg = is_setx ? usx_T : is_jal ? pc_plus4 : write_data; //correct
 	assign ctrl_writeEnable = Rwe;
 	assign ctrl_writeReg = rd;
 	assign ctrl_readRegA = rs;
