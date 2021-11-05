@@ -17,7 +17,7 @@ bex 2				# should not jump
 and $10, $1, $2			# r10 = r1 & r2 = 0x0000FFFF & 0x7FFF8000 = 0x00008000(hex) = 32768(decimal)
 or $12, $1, $2			# r12 = r1 | r2 = 0x0000FFFF | 0x7FFF8000 = 0x7FFFFFFF(hex) = 2147483647(decimal)
 
-j 15			# jump to add (insn 15)
+j 20			# jump to add (insn 20)
 nop
 nop
 nop
@@ -29,14 +29,14 @@ nop
 nop		
 and $23, $22, $21       # r23 = 1 & 3 = 1
 or $24, $20, $23        # r24 = 2 | 1 = 3
-jal 27			# jump to addi (insn 27)
+jal 32			# jump to addi (insn 32)
 sll $25, $23, 1          # r25 = 1 << 1 = 2
 sra $26, $25, 1          # r26 = 2 >> 1 = 1 
 
 addi $20, $0, 2         # r20 = 2
 and $23, $22, $21       # r23 = 1 & 3 = 1
-addi $27, $0, 30	# r27 = 30
-jr $27			# jr 30
+addi $27, $0, 36	# r27 = 36
+jr $27			# jr (insn 36)
 
 nop
 addi $20, $0, 2         # r20 = 2
