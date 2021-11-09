@@ -21,9 +21,21 @@
 <li>clock_4 (clock_in, reset, clock_out);</li>
 </ul>
 
+### Processor (overall view)
+we divided our Implementation to different sections
+- Imem section (see README CP4)
+- instruction Decode (see details below)
+- Process overflow (see details below)
+- Regfile (see README CP4)
+- ALU section (provided by instructor)
+- Dmem section (see README CP4)
+
+
 ### Program Counter "PC"
 
 We started of with the PC , which is basically a 32 DFFEs . PC takes in 32 bits and outputs 32 bits which are then connected to our adder to add four.
+we have pc_plus 0 to do pc+4 , and pc_plusN to deal with immediate instruction type
+
 ### controller and instruction decode
 
 We assign the controller based on the given OPcodes in the pdf file.
@@ -47,9 +59,25 @@ and ctrl_readRegA to rs . ctrl_readRegB to rt.
 
 (see the controller and instruction decode section above for the logic).
 
-### overflow process
-we fixed our overflow from our mistakes in cp4
-
-### added (bne , bex , j , jr,jal)
-our branch command works properly and as expected as we modified our controller to handle
+### new instructions (blt, bne , bex , j , jr , jal , setx)
+our branch command works properly and as expected as we modified our controller to handle.
 such commands (see the updated controller)
+we have mux_BR that is defined as
+(is_blt & (~isLessThan) & isNotEqual | is_bne & isNotEqual) ? pc_plusImm : pc_plus4
+and mux_J that is defined as
+is_jr ? data_readRegB : (is_bex & isNotEqual) ? usx_T : ((is_j | is_jal) ? usx_T : mux_BR)
+
+note that mux_BR is in mux_J , this means we have a chain of logic.
+that end up with mux_BR. Finally , mux_BR has pc_plusImm: pc_plus4
+this means we either pc_plus Immediate or pc_plus +4 to fetch then
+next instruction
+
+### overflow process
+we fixed our overflow from our mistakes in cp4, after adding the new instructions.
+
+### clocking schemes
+we have 2 clock divisors :
+clock that divides by 2
+clock that divides by 4
+our clock scheme is as follows starting from the slowest clock:-
+Processor -> Regfile -> Imem/Dmem

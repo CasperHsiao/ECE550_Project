@@ -64,7 +64,7 @@ set_location_assignment PIN_J22 -to seg1[5]
 set_location_assignment PIN_H22 -to seg1[6]
 set_location_assignment PIN_G6 -to ps2_clock
 set_location_assignment PIN_H5 -to ps2_data
-set_location_assignment PIN_M23 -to resetn
+set_location_assignment PIN_AB28 -to resetn
 set_location_assignment PIN_L6 -to lcd_blon
 set_location_assignment PIN_M5 -to lcd_data[7]
 set_location_assignment PIN_M3 -to lcd_data[6]
@@ -196,4 +196,18 @@ set_global_assignment -name VERILOG_FILE img_index.v
 set_global_assignment -name VERILOG_FILE img_data.v
 set_global_assignment -name MIF_FILE lab7_img_data.mif
 set_global_assignment -name MIF_FILE lab7_img_index.mif
+set_location_assignment PIN_M23 -to up
+set_location_assignment PIN_M21 -to down
+set_location_assignment PIN_N21 -to right
+set_location_assignment PIN_R24 -to left
+set_global_assignment -name CDF_FILE output_files/Chain2.cdf
+set_global_assignment -name CDF_FILE output_files/Chain3.cdf
+set_global_assignment -name CDF_FILE output_files/Chain4.cdf
+set_global_assignment -name CDF_FILE output_files/Chain5.cdf
+set_global_assignment -name CDF_FILE output_files/Chain7.cdf
+set_global_assignment -name CDF_FILE output_files/Chain8.cdf
+set_global_assignment -name CDF_FILE output_files/Chain9.cdf
+set_global_assignment -name CDF_FILE output_files/Chain10.cdf
+set_global_assignment -name CDF_FILE output_files/Chain12.cdf
+set_global_assignment -name CDF_FILE output_files/Chain13.cdf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -11,7 +11,11 @@ module skeleton(resetn,
 	VGA_R,   														//	VGA Red[9:0]
 	VGA_G,	 														//	VGA Green[9:0]
 	VGA_B,															//	VGA Blue[9:0]
-	CLOCK_50);  													// 50 MHz clock
+	CLOCK_50,
+	up,
+	down,
+	left,
+	right);  													// 50 MHz clock
 		
 	////////////////////////	VGA	////////////////////////////
 	output			VGA_CLK;   				//	VGA Clock
@@ -76,7 +80,8 @@ module skeleton(resetn,
 	
 	// some LEDs that you could use for debugging if you wanted
 	assign leds = 8'b00101011;
-		
+	
+	input up, down, left, right;
 	// VGA
 	Reset_Delay			r0	(.iCLK(CLOCK_50),.oRESET(DLY_RST)	);
 	VGA_Audio_PLL 		p1	(.areset(~DLY_RST),.inclk0(CLOCK_50),.c0(VGA_CTRL_CLK),.c1(AUD_CTRL_CLK),.c2(VGA_CLK)	);
@@ -87,7 +92,11 @@ module skeleton(resetn,
 								 .oVS(VGA_VS),
 								 .b_data(VGA_B),
 								 .g_data(VGA_G),
-								 .r_data(VGA_R));
+								 .r_data(VGA_R),
+								 .up(up),
+								 .down(down), 
+								 .left(left), 
+								 .right(right));
 	
 	
 endmodule
