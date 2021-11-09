@@ -10,7 +10,7 @@
  */
 
 module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_clock,
-				q_imem, data_readRegA, data_readRegB, data_writeReg, data);
+					data_writeReg, rd, overflow, data_operandB,reg30);
     input clock, reset;
     /* 
         Create four clocks for each module from the original input "clock".
@@ -22,11 +22,13 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
     output imem_clock, dmem_clock, processor_clock, regfile_clock;
 	wire imem_clock, dmem_clock, processor_clock, regfile_clock;
 	assign dmem_clock = clock;
+	assign imem_clock = clock;
 	clock_2 regfileClock(clock, reset, regfile_clock);
 	clock_4 processorClock(clock, reset, processor_clock);
-	assign imem_clock = processor_clock;
 	
-	output [31:0] q_imem, data_readRegA, data_readRegB, data_writeReg, data;
+	output [31:0] data_writeReg, data_operandB,reg30;
+	output [4:0] rd;
+	output overflow;
 	
 	
 
@@ -71,7 +73,8 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
         ctrl_readRegB,
         data_writeReg,
         data_readRegA,
-        data_readRegB
+        data_readRegB,
+		  reg30
     );
 
     /** PROCESSOR **/
@@ -97,7 +100,12 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
         ctrl_readRegB,                  // O: Register to read from port B of regfile
         data_writeReg,                  // O: Data to write to for regfile
         data_readRegA,                  // I: Data from port A of regfile
-        data_readRegB                   // I: Data from port B of regfile
+        data_readRegB,
+			rStatus,
+			rd,
+			overflow,
+			data_operandA,
+			data_operandB// I: Data from port B of regfile
     );
 
 endmodule

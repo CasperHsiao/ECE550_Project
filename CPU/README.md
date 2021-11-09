@@ -1,4 +1,4 @@
-# Simple Processor Implementation - Checkpoint 4
+# Full Processor Implementation - Checkpoint 5
 ## NetID : hma23 , ph139
 
 
@@ -30,9 +30,20 @@
 <li>clock_4 (clock_in, reset, clock_out);</li>
 </ul>
 
+### Processor (overall view)
+we divided our Implementation to different sections
+- Imem section (see README CP4)
+- instruction Decode (see details below)
+- Process overflow (see details below)
+- Regfile (see README CP4)
+- ALU section (provided by instructor)
+- Dmem section (see README CP4)
+
+
 ### Program Counter "PC"
 
-We started of with the PC, which is basically a register, consists of 32 DFFEs. PC takes in 32-bit input and outputs 32-bit address, which is then connected to our adder to increment to the next PC.
+We started of with the PC , which is basically a 32 DFFEs . PC takes in 32 bits and outputs 32 bits which are then connected to our adder to add four.
+we have pc_plus 0 to do pc+4 , and pc_plusN to deal with immediate instruction type
 
 ### controller and instruction decode
 
@@ -43,17 +54,9 @@ We assigned (for now since we may need to adjust this in Checkpoint 5):
 <ul>
 <li>
 DMwe to is_sw (we eneable data write if the instruction is sw)
-</li>
-<li>
-Rwe to is_Rtype|is_addi|is_lw (we enable Register write if the instruction is R type or immediate or lw)
-</li>
-<li>
+Rwe to is_Rtype|is_addi|is_lw|is_setx (we enable Register write if the instruction is R type or immediate or lw)
 Rwd to is_lw (we set Rwd if we it is lw)
-</li>
-<li>
-ReadRd is_sw (We use this flag so we can deal with rt correctly)
-</li>
-<li>
+ReadRd is_sw | is_jr(We use this flag so we can deal with rt correctly)
 ALUinB is_addi|is_lw|is_sw (if we need register B to bypass the ALU and do immediate instruction)
 </li>
 </ul>
@@ -74,3 +77,25 @@ We did not successfully implemented the overflow function. Therefore, we comment
 
 ### Dmem
 Dmem is enabled by the control signal DMwe. The data to store to dmem is extracted from the data_readRegB. The data_writeReg will be controlled by Rwd to be either the data from dmem or ALU.
+### new instructions (blt, bne , bex , j , jr , jal , setx)
+our branch command works properly and as expected as we modified our controller to handle.
+such commands (see the updated controller)
+we have mux_BR that is defined as
+(is_blt & (~isLessThan) & isNotEqual | is_bne & isNotEqual) ? pc_plusImm : pc_plus4
+and mux_J that is defined as
+is_jr ? data_readRegB : (is_bex & isNotEqual) ? usx_T : ((is_j | is_jal) ? usx_T : mux_BR)
+
+note that mux_BR is in mux_J , this means we have a chain of logic.
+that end up with mux_BR. Finally , mux_BR has pc_plusImm: pc_plus4
+this means we either pc_plus Immediate or pc_plus +4 to fetch then
+next instruction
+
+### overflow process
+we fixed our overflow from our mistakes in cp4, after adding the new instructions.
+
+### clocking schemes
+we have 2 clock divisors :
+clock that divides by 2
+clock that divides by 4
+our clock scheme is as follows starting from the slowest clock:-
+Processor -> Regfile -> Imem/Dmem

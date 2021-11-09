@@ -30,7 +30,7 @@ module four_byte_CSA(a, b, ci, s);
 	assign sel[2] = sel[1] ? c1[1] : c0[1];
 	// Select the 31-24 bits sum, carry out and overflow
 	assign s[31:24] = sel[2] ? s41 : s40;
-	assign co = sel[2] ? c1[2] : c0[2];
-	assign overflow = sel[2] ? OF1 : OF0;
+	//assign co = sel[2] ? c1[2] : c0[2];
+	//assign overflow = sel[2] ? OF1 : OF0;
 	
 endmodule
