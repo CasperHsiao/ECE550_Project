@@ -69,13 +69,7 @@ module processor(
     ctrl_readRegB,                  // O: Register to read from port B of regfile
     data_writeReg,                  // O: Data to write to for regfile
     data_readRegA,                  // I: Data from port A of regfile
-    data_readRegB,
-	 rStatus,
-	 rd,
-	 overflow,
-	 data_operandA,
-	 data_operandB// I: Data from port B of regfile
-	
+    data_readRegB
 );
     // Control signals
     input clock, reset;
@@ -120,7 +114,6 @@ module processor(
 										is_j, is_bne, is_jal, is_jr, is_blt, is_bex, is_setx);
 	
 	wire [4:0] rd, rs, rt;
-	output [4:0] rd;
 	wire [4:0] detect_ovf;
 	assign detect_ovf = (is_rAdd|is_addi|is_rSub) ? (overflow ? 5'd30 : insn[26:22]) : insn[26:22];	
 	assign rd = is_setx ? 5'd30 : is_jal ? 5'd31 : detect_ovf; //correct
@@ -140,7 +133,6 @@ module processor(
 //	// Process overflow
 	wire is_rAdd, is_rSub;
 	wire [31:0] rStatus;
-	output [31:0] rStatus, data_operandA, data_operandB;
 	assign is_rAdd = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(~ctrl_ALUopcode[0]);
 	assign is_rSub = is_Rtype&(~ctrl_ALUopcode[4])&(~ctrl_ALUopcode[3])&(~ctrl_ALUopcode[2])&(~ctrl_ALUopcode[1])&(ctrl_ALUopcode[0]);
 	assign rStatus = is_rAdd ? 32'd1 : is_rSub ? 32'd3 : is_addi ? 32'd2 : 32'd0;
@@ -164,7 +156,6 @@ module processor(
 	assign ctrl_shiftamt = is_Rtype ? insn[11:7] : 5'd0;
 	wire [31:0] data_operandA, data_operandB, data_result;
 	wire isNotEqual, isLessThan, overflow;
-	output overflow;
 	assign data_operandA = data_readRegA;
 	assign data_operandB = ALUinB ? sx_imm : data_readRegB;
 	alu execution(data_operandA, data_operandB, ctrl_ALUopcode, ctrl_shiftamt, data_result, isNotEqual, isLessThan, overflow);
