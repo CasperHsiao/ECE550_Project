@@ -9,7 +9,7 @@
  * inspect which signals the processor tries to assert when.
  */
 
-module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_clock);
+module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_clock, o_data_writeReg, o_ctrl_writeReg, o_ctrl_writeEnable);
     input clock, reset;
     /* 
         Create four clocks for each module from the original input "clock".
@@ -22,7 +22,7 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
 	wire imem_clock, dmem_clock, processor_clock, regfile_clock;
 	assign dmem_clock = clock;
 	assign imem_clock = clock;
-	clock_2 regfileClock(clock, reset, regfile_clock);
+	clock_4 regfileClock(clock, reset, regfile_clock);
 	clock_4 processorClock(clock, reset, processor_clock);
 	
 	
@@ -96,5 +96,11 @@ module skeleton(clock, reset, imem_clock, dmem_clock, processor_clock, regfile_c
         data_readRegA,                  // I: Data from port A of regfile
         data_readRegB						// I: Data from port B of regfile
     );
+	output o_ctrl_writeEnable;
+	output [4:0] o_ctrl_writeReg;
+	output [31:0] o_data_writeReg;
+	assign o_ctrl_writeEnable = ctrl_writeEnable;
+   assign o_ctrl_writeReg = ctrl_writeReg;
+   assign o_data_writeReg = data_writeReg;
 
 endmodule

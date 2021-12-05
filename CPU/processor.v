@@ -95,7 +95,7 @@ module processor(
 	wire [31:0] pc_out, pc_plus4, pc_plusImm, mux_BR, mux_J;
 	pc program_counter(mux_J, pc_out, clock, reset);
 	four_byte_CSA pc_plus0(pc_out, 32'd1, 32'd0, pc_plus4);
-	four_byte_CSA pc_plus1(pc_out, sx_imm, 32'd0, pc_plusImm);
+	four_byte_CSA pc_plus1(pc_out, sx_imm, 32'd1, pc_plusImm);
 	assign mux_BR = (is_blt & (~isLessThan) & isNotEqual | is_bne & isNotEqual) ? pc_plusImm : pc_plus4;
 	assign mux_J = is_jr ? data_readRegB : (is_bex & isNotEqual) ? usx_T : ((is_j | is_jal) ? usx_T : mux_BR);
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
